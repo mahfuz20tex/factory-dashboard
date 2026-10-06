@@ -25,8 +25,8 @@ main{flex:1;min-height:0;display:flex;flex-direction:column;padding:10px 12px 0;
 .ring{position:relative;flex:none}
 .ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-.mid small{color:var(--mute);font-size:13px}.mid b{font-size:24px}
-.cat{position:absolute;width:15%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:0;color:#fff;font-size:clamp(18px,6vw,26px);box-shadow:0 2px 6px #0003;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mid small{color:var(--mute);font-size:13px}.mid b{font-size:22px}
+.cat{position:absolute;width:14%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:0;color:#fff;font-size:clamp(18px,6vw,26px);box-shadow:0 2px 6px #0003;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .cat:active{filter:brightness(.9)}
 .cat i{position:absolute;bottom:-17px;font-style:normal;font-size:11px;color:var(--mute);white-space:nowrap}
 .cat em{position:absolute;top:-8px;right:-14px;font-style:normal;background:#fff;color:var(--text);font-size:10px;border-radius:9px;padding:1px 5px;box-shadow:0 1px 3px #0003}
@@ -79,7 +79,7 @@ nav button:active{filter:brightness(.9);transform:scale(.97)}
 
 <script>
 const CATS={
- expense:[["Bills","🧾","#1e88e5"],["Car","🚗","#fb8c00"],["Clothes","👕","#8e24aa"],["Food","🍔","#e53935"],["Health","💊","#43a047"],["Home","🏠","#6d4c41"],["Fun","🎮","#00acc1"],["Other","🛒","#d81b60"]],
+ expense:[["Bills","🧾","#1e88e5"],["Car","🚗","#fb8c00"],["Clothes","👕","#8e24aa"],["Food","🍔","#00acc1"],["Health","💊","#43a047"],["Home","🏠","#6d4c41"],["Fun","🎮","#e53935"],["Other","🛒","#d81b60"]],
  income:[["Salary","💼","#2e7d32"],["Business","📈","#1e88e5"],["Gift","🎁","#f9a825"],["Other","💰","#8e24aa"]]
 };
 const KEY="myMoneyData";
@@ -104,13 +104,13 @@ function render(){
 function home(md,inc,exp){
   const list=CATS[type],tot=type==="expense"?exp:inc;
   const by=list.map(c=>md.filter(r=>r.type===type&&r.category===c[0]).reduce((s,r)=>s+r.amount,0));
-  const R=36,C=2*Math.PI*R;let off=0,arcs="";
+  const R=28,C=2*Math.PI*R;let off=0,arcs="";
   by.forEach((v,i)=>{if(!v)return;const len=v/tot*C;
-    arcs+=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="${list[i][2]}" stroke-width="13" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}"/>`;off+=len});
-  if(!tot)arcs=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="#dfe5e7" stroke-width="13"/>`;
+    arcs+=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="${list[i][2]}" stroke-width="11" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}"/>`;off+=len});
+  if(!tot)arcs=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="#dfe5e7" stroke-width="11"/>`;
   let btns="";
   list.forEach((c,i)=>{const a=(i/list.length)*2*Math.PI-Math.PI/2;
-    btns+=`<button class="cat" data-i="${i}" style="left:${50+R*Math.cos(a)}%;top:${50+R*Math.sin(a)}%;background:${c[2]}" aria-label="${c[0]}">${c[1]}${by[i]?`<em>${fmt(by[i])}</em>`:""}</button>`});
+    btns+=`<button class="cat" data-i="${i}" style="left:${50+43*Math.cos(a)}%;top:${50+43*Math.sin(a)}%;background:${c[2]}" aria-label="${c[0]}">${c[1]}${by[i]?`<em>${fmt(by[i])}</em>`:""}</button>`});
   $("main").innerHTML=`<div class="sum"><div>Income<b style="color:var(--inc)">${fmt(inc)}</b></div><div>Expense<b style="color:var(--exp)">${fmt(exp)}</b></div></div>
     <div class="stage" id="stage"><div class="ring" id="ring"><svg viewBox="0 0 100 100">${arcs}</svg>
     <div class="mid" id="mid"><small>${type==="expense"?"Spent":"Earned"} ⇄</small><b>${fmt(tot)}</b></div>${btns}</div></div>`;
