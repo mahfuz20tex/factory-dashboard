@@ -176,6 +176,7 @@ $("clearBtn").onclick=()=>{
   a.download="money-"+ym(cur)+".csv";a.click()};
 cur=new Date(cur.getFullYear(),cur.getMonth(),1);
 render();
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>
 </html>
