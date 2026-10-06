@@ -30,9 +30,10 @@ main{flex:1;min-height:0;display:flex;flex-direction:column;padding:10px 12px 0;
 .cat:active{filter:brightness(.9)}
 .cat i{position:absolute;bottom:-17px;font-style:normal;font-size:11px;color:var(--mute);white-space:nowrap}
 .cat em{position:absolute;top:-8px;right:-14px;font-style:normal;background:#fff;color:var(--text);font-size:10px;border-radius:9px;padding:1px 5px;box-shadow:0 1px 3px #0003}
-nav{flex:none;display:flex;background:#fff;box-shadow:0 -2px 8px #0002;padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;background:none;padding:14px;font-size:16px;font-weight:600;color:var(--mute);cursor:pointer;border-top:3px solid transparent}
-nav .on.e{color:var(--exp);border-color:var(--exp)}nav .on.i{color:var(--inc);border-color:var(--inc)}
+nav{flex:none;display:flex;gap:14px;padding:10px 14px calc(env(safe-area-inset-bottom) + 10px);background:#fff;box-shadow:0 -2px 8px #0002}
+nav button{flex:1;border:0;border-radius:14px;color:#fff;font-size:38px;font-weight:300;line-height:1;padding:8px 0 12px;cursor:pointer;box-shadow:0 2px 6px #0003}
+nav button:active{filter:brightness(.9);transform:scale(.97)}
+#bM{background:var(--exp)}#bP{background:var(--inc)}
 .sum{display:flex;gap:10px;margin-bottom:10px;flex:none}.sum div{flex:1;background:var(--card);border-radius:10px;padding:10px;text-align:center;font-size:13px;color:var(--mute)}.sum b{display:block;font-size:17px}
 .day{margin:14px 4px 6px;font-size:13px;color:var(--mute);font-weight:600}
 .rec{background:var(--card);display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:6px}
@@ -43,6 +44,8 @@ nav .on.e{color:var(--exp);border-color:var(--exp)}nav .on.i{color:var(--inc);bo
 #sheet{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:5}
 #sheet.show{display:flex}
 .pad{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom) + 16px)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px}.chips button{flex:none;border:2px solid transparent;border-radius:20px;background:var(--bg);padding:7px 12px;font-size:14px;cursor:pointer;white-space:nowrap}.chips button.on{color:#fff}
+.mid{pointer-events:auto!important}
 .pad h3{display:flex;align-items:center;gap:10px;font-size:16px}
 .pad h3 .ic{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
 .amt{font-size:38px;font-weight:600;text-align:right;margin:10px 0}
@@ -63,11 +66,11 @@ nav .on.e{color:var(--exp);border-color:var(--exp)}nav .on.i{color:var(--inc);bo
 </header>
 <main id="main"></main>
 <nav>
-  <button id="tE" class="e on">− Expense</button>
-  <button id="tI" class="i">+ Income</button>
+  <button id="bM" aria-label="Add expense">−</button>
+  <button id="bP" aria-label="Add income">+</button>
 </nav>
 <div id="sheet"><div class="pad">
-  <h3><span class="ic" id="sIc"></span><span id="sName"></span></h3>
+  <div class="chips" id="chips"></div>
   <div class="amt" id="amt">0</div>
   <input id="note" placeholder="Note (optional)">
   <input id="date" type="date">
@@ -94,7 +97,6 @@ function render(){
   const md=monthData(),inc=sum(md,"income"),exp=sum(md,"expense");
   $("mLabel").textContent=cur.toLocaleString(undefined,{month:"long",year:"numeric"});
   $("bal").textContent=fmt(inc-exp);
-  $("tE").className="e"+(type==="expense"?" on":"");$("tI").className="i"+(type==="income"?" on":"");
   $("viewBtn").textContent=view==="home"?"☰":"◔";
   view==="home"?home(md,inc,exp):records(md,inc,exp);
 }
@@ -111,9 +113,9 @@ function home(md,inc,exp){
     btns+=`<button class="cat" data-i="${i}" style="left:${50+R*Math.cos(a)}%;top:${50+R*Math.sin(a)}%;background:${c[2]}" aria-label="${c[0]}">${c[1]}${by[i]?`<em>${fmt(by[i])}</em>`:""}</button>`});
   $("main").innerHTML=`<div class="sum"><div>Income<b style="color:var(--inc)">${fmt(inc)}</b></div><div>Expense<b style="color:var(--exp)">${fmt(exp)}</b></div></div>
     <div class="stage" id="stage"><div class="ring" id="ring"><svg viewBox="0 0 100 100">${arcs}</svg>
-    <div class="mid"><small>${type==="expense"?"Spent":"Earned"}</small><b>${fmt(tot)}</b></div>${btns}</div></div>`;
-  fit();
-  document.querySelectorAll(".cat").forEach(b=>b.onclick=()=>openSheet(list[b.dataset.i]));
+    <div class="mid" id="mid"><small>${type==="expense"?"Spent":"Earned"} ⇄</small><b>${fmt(tot)}</b></div>${btns}</div></div>`;
+  fit();$("mid").onclick=()=>{type=type==="expense"?"income":"expense";render()};
+  document.querySelectorAll(".cat").forEach(b=>b.onclick=e=>{e.stopPropagation();openSheet(type,list[b.dataset.i])});
 }
 
 function fit(){const st=$("stage"),rg=$("ring");if(!st||!rg)return;
@@ -138,12 +140,18 @@ function records(md,inc,exp){
     if(confirm("Delete this record?")){data=data.filter(r=>r.id!=b.dataset.id);save();render()}});
 }
 
-function openSheet(c){
-  pick=c;amt="";$("amt").textContent="0";$("note").value="";
-  const t=new Date(),sameMonth=ym(t)===ym(cur);
-  $("date").value=sameMonth?t.toISOString().slice(0,10):ym(cur)+"-01";
-  $("sIc").textContent=c[1];$("sIc").style.background=c[2];$("sName").textContent=c[0]+" · "+(type==="expense"?"Expense":"Income");
-  $("sheet").classList.add("show");
+let st="expense";
+function openSheet(t,c){
+  st=t;pick=c||CATS[t][0];amt="";$("amt").textContent="0";$("note").value="";
+  $("amt").style.color=t==="income"?"var(--inc)":"var(--exp)";$("ok").style.background=t==="income"?"var(--inc)":"var(--exp)";
+  $("ok").textContent=t==="income"?"Add income":"Add expense";
+  const d=new Date(),same=ym(d)===ym(cur);
+  $("date").value=same?[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-"):ym(cur)+"-01";
+  chips();$("sheet").classList.add("show");
+}
+function chips(){
+  $("chips").innerHTML=CATS[st].map(c=>`<button data-n="${c[0]}" class="${c[0]===pick[0]?"on":""}" style="${c[0]===pick[0]?`background:${c[2]};border-color:${c[2]}`:""}">${c[1]} ${c[0]}</button>`).join("");
+  $("chips").querySelectorAll("button").forEach(b=>b.onclick=()=>{pick=catInfo(st,b.dataset.n);chips()});
 }
 $("keys").innerHTML=["1","2","3","4","5","6","7","8","9",".","0","⌫"].map(k=>`<button data-k="${k}">${k}</button>`).join("")+`<button class="ok" id="ok">Save</button>`;
 $("keys").onclick=e=>{const k=e.target.dataset.k;if(!k)return;
@@ -151,13 +159,14 @@ $("keys").onclick=e=>{const k=e.target.dataset.k;if(!k)return;
   else if(k==="."){if(!amt.includes("."))amt=(amt||"0")+"."}
   else if(!/\.\d\d$/.test(amt)&&amt.length<10)amt+=k;
   $("amt").textContent=amt||"0"};
+
 $("ok").onclick=()=>{const v=parseFloat(amt);if(!v)return;
-  data.push({id:Date.now(),type,category:pick[0],amount:v,note:$("note").value.trim(),date:$("date").value});
-  save();$("sheet").classList.remove("show");render()};
+  data.push({id:Date.now(),type:st,category:pick[0],amount:v,note:$("note").value.trim(),date:$("date").value});
+  type=st;save();$("sheet").classList.remove("show");render()};
 $("sheet").onclick=e=>{if(e.target.id==="sheet")$("sheet").classList.remove("show")};
 
-$("tE").onclick=()=>{type="expense";render()};
-$("tI").onclick=()=>{type="income";render()};
+$("bM").onclick=()=>openSheet("expense");
+$("bP").onclick=()=>openSheet("income");
 $("viewBtn").onclick=()=>{view=view==="home"?"records":"home";render()};
 $("prev").onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);render()};
 $("next").onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);render()};
