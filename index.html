@@ -1,205 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Parts Dashboard</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <style>
-        :root { 
-            --bg: #f2f2f7; 
-            --card-bg: #ffffff; 
-            --primary: #2c3e50; 
-            --accent: #3498db;
-            --text: #1c1c1e; 
-            --text-sec: #636366; 
-            --success: #27ae60;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-        }
-        
-        body { 
-            font-family: -apple-system, system-ui, sans-serif; 
-            background-color: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
-
-        header { padding: 50px 20px 10px; text-align: center; background: white; border-bottom: 1px solid #ddd; }
-        header h1 { margin: 0; font-size: 20px; color: var(--primary); }
-        header p { margin: 5px 0 0; font-size: 12px; color: var(--text-sec); }
-
-        #main-menu, #detail-screen { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 15px; 
-            box-sizing: border-box; 
-        }
-
-        #detail-screen { display: none; background: var(--bg); }
-
-        /* KPI GRID */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .kpi-card {
-            background: white;
-            padding: 15px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            text-align: center;
-        }
-
-        .kpi-label { font-size: 10px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; margin-bottom: 5px; }
-        .kpi-value { font-size: 20px; font-weight: 800; color: var(--primary); }
-        .kpi-card.highlight { border-left: 4px solid var(--accent); }
-
-        /* MENU SECTIONS */
-        .menu-section {
-            background: white;
-            padding: 20px;
-            border-radius: 18px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .menu-section span:first-child { display: flex; align-items: center; gap: 10px; }
-        .icon { font-size: 20px; }
-
-        /* TABLES */
-        .table-container { background: white; border-radius: 16px; overflow: hidden; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: #f8f9fa; padding: 12px 8px; text-align: left; color: var(--text-sec); border-bottom: 1px solid #eee; }
-        td { padding: 12px 8px; border-bottom: 1px solid #f9f9f9; }
-
-        /* CONTROLS */
-        .back-bar { margin-bottom: 15px; }
-        .back-btn { background: #e5e5ea; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; }
-        .sync-info { text-align: center; padding: 15px; color: var(--accent); font-size: 12px; font-weight: 600; cursor: pointer; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>My Money</title>
+<meta name="apple-mobile-web-app-title" content="My Money">
+<meta name="theme-color" content="#26a69a">
+<link rel="apple-touch-icon" id="icon" href="">
+<style>
+:root{--bar:#26a69a;--bg:#f4f6f6;--card:#fff;--text:#263238;--mute:#78909c;--inc:#2e9e5b;--exp:#e5533d}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html{background:#26a69a;height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;height:100dvh;overflow:hidden;max-width:560px;margin:0 auto;display:flex;flex-direction:column;overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;background:var(--bg)}
+header{background:var(--bar);color:#fff;padding:calc(env(safe-area-inset-top) + 14px) 16px 14px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.top button{background:none;border:0;color:#fff;font-size:24px;padding:4px 10px;cursor:pointer}
+.bal{text-align:center}.bal small{opacity:.85;font-size:13px}.bal b{display:block;font-size:26px;font-weight:600}
+.month{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:8px;font-size:15px}
+.month button{font-size:20px;padding:0 8px}
+main{flex:1;min-height:0;display:flex;flex-direction:column;padding:10px 12px 0;overflow-y:auto;overscroll-behavior:contain}
+.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.ring{position:relative;flex:none}
+.ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.mid small{color:var(--mute);font-size:13px}.mid b{font-size:24px}
+.cat{position:absolute;width:15%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:0;color:#fff;font-size:clamp(18px,6vw,26px);box-shadow:0 2px 6px #0003;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cat:active{filter:brightness(.9)}
+.cat i{position:absolute;bottom:-17px;font-style:normal;font-size:11px;color:var(--mute);white-space:nowrap}
+.cat em{position:absolute;top:-8px;right:-14px;font-style:normal;background:#fff;color:var(--text);font-size:10px;border-radius:9px;padding:1px 5px;box-shadow:0 1px 3px #0003}
+nav{flex:none;display:flex;background:#fff;box-shadow:0 -2px 8px #0002;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:14px;font-size:16px;font-weight:600;color:var(--mute);cursor:pointer;border-top:3px solid transparent}
+nav .on.e{color:var(--exp);border-color:var(--exp)}nav .on.i{color:var(--inc);border-color:var(--inc)}
+.sum{display:flex;gap:10px;margin-bottom:10px;flex:none}.sum div{flex:1;background:var(--card);border-radius:10px;padding:10px;text-align:center;font-size:13px;color:var(--mute)}.sum b{display:block;font-size:17px}
+.day{margin:14px 4px 6px;font-size:13px;color:var(--mute);font-weight:600}
+.rec{background:var(--card);display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:6px}
+.rec .ic{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+.rec div{flex:1;min-width:0}.rec span{display:block;font-size:12px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec button{border:0;background:none;color:var(--mute);font-size:18px;padding:6px;cursor:pointer}
+.empty{text-align:center;color:var(--mute);margin:40px 20px}
+#sheet{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:5}
+#sheet.show{display:flex}
+.pad{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom) + 16px)}
+.pad h3{display:flex;align-items:center;gap:10px;font-size:16px}
+.pad h3 .ic{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
+.amt{font-size:38px;font-weight:600;text-align:right;margin:10px 0}
+.pad input{width:100%;border:1px solid #cfd8dc;border-radius:8px;padding:10px;font-size:15px;margin-bottom:8px}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.keys button{padding:15px;font-size:20px;border:0;border-radius:10px;background:var(--bg);cursor:pointer}
+.keys .ok{grid-column:1/4;background:var(--bar);color:#fff;font-weight:600;font-size:17px}
+</style>
 </head>
 <body>
+<header>
+  <div class="top">
+    <button id="viewBtn" aria-label="Switch view">☰</button>
+    <div class="bal"><small>Balance</small><b id="bal">0.00</b></div>
+    <button id="clearBtn" aria-label="Export" title="Export CSV">⇩</button>
+  </div>
+  <div class="month"><button id="prev">‹</button><span id="mLabel"></span><button id="next">›</button></div>
+</header>
+<main id="main"></main>
+<nav>
+  <button id="tE" class="e on">− Expense</button>
+  <button id="tI" class="i">+ Income</button>
+</nav>
+<div id="sheet"><div class="pad">
+  <h3><span class="ic" id="sIc"></span><span id="sName"></span></h3>
+  <div class="amt" id="amt">0</div>
+  <input id="note" placeholder="Note (optional)">
+  <input id="date" type="date">
+  <div class="keys" id="keys"></div>
+</div></div>
 
-    <header>
-        <h1>Factory Inventory</h1>
-        <p>Spare Parts Management Dashboard</p>
-    </header>
+<script>
+const CATS={
+ expense:[["Bills","🧾","#5c6bc0"],["Car","🚗","#ef6c00"],["Clothes","👕","#ab47bc"],["Food","🍔","#e53935"],["Health","💊","#26a69a"],["Home","🏠","#8d6e63"],["Fun","🎮","#ec407a"],["Other","🛒","#78909c"]],
+ income:[["Salary","💼","#2e9e5b"],["Business","📈","#039be5"],["Gift","🎁","#f9a825"],["Other","💰","#78909c"]]
+};
+const KEY="myMoneyData";
+let data=[];try{data=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
+let type="expense",view="home",cur=new Date(),pick=null,amt="";
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const fmt=n=>n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const ym=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+const catInfo=(t,n)=>CATS[t].find(c=>c[0]===n)||CATS[t][CATS[t].length-1];
+const monthData=()=>data.filter(r=>r.date.startsWith(ym(cur)));
+const sum=(a,t)=>a.filter(r=>r.type===t).reduce((s,r)=>s+r.amount,0);
 
-    <div id="main-menu">
-        <div class="kpi-grid" id="kpi-display">
-            <div class="kpi-card"><div class="kpi-value">...</div></div>
-            <div class="kpi-card"><div class="kpi-value">...</div></div>
-        </div>
+function render(){
+  const md=monthData(),inc=sum(md,"income"),exp=sum(md,"expense");
+  $("mLabel").textContent=cur.toLocaleString(undefined,{month:"long",year:"numeric"});
+  $("bal").textContent=fmt(inc-exp);
+  $("tE").className="e"+(type==="expense"?" on":"");$("tI").className="i"+(type==="income"?" on":"");
+  $("viewBtn").textContent=view==="home"?"☰":"◔";
+  view==="home"?home(md,inc,exp):records(md,inc,exp);
+}
 
-        <div class="menu-section" onclick="showDetail('breakdown')">
-            <span><span class="icon">📊</span> Machine Breakdown</span>
-            <span>→</span>
-        </div>
-        <div class="menu-section" onclick="showDetail('activity')">
-            <span><span class="icon">📝</span> Recent Activity</span>
-            <span>→</span>
-        </div>
-        
-        <div class="sync-info" onclick="fetchData()">↻ Refresh Data</div>
-    </div>
+function home(md,inc,exp){
+  const list=CATS[type],tot=type==="expense"?exp:inc;
+  const by=list.map(c=>md.filter(r=>r.type===type&&r.category===c[0]).reduce((s,r)=>s+r.amount,0));
+  const R=36,C=2*Math.PI*R;let off=0,arcs="";
+  by.forEach((v,i)=>{if(!v)return;const len=v/tot*C;
+    arcs+=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="${list[i][2]}" stroke-width="13" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}"/>`;off+=len});
+  if(!tot)arcs=`<circle cx="50" cy="50" r="${R}" fill="none" stroke="#dfe5e7" stroke-width="13"/>`;
+  let btns="";
+  list.forEach((c,i)=>{const a=(i/list.length)*2*Math.PI-Math.PI/2;
+    btns+=`<button class="cat" data-i="${i}" style="left:${50+R*Math.cos(a)}%;top:${50+R*Math.sin(a)}%;background:${c[2]}" aria-label="${c[0]}">${c[1]}${by[i]?`<em>${fmt(by[i])}</em>`:""}</button>`});
+  $("main").innerHTML=`<div class="sum"><div>Income<b style="color:var(--inc)">${fmt(inc)}</b></div><div>Expense<b style="color:var(--exp)">${fmt(exp)}</b></div></div>
+    <div class="stage" id="stage"><div class="ring" id="ring"><svg viewBox="0 0 100 100">${arcs}</svg>
+    <div class="mid"><small>${type==="expense"?"Spent":"Earned"}</small><b>${fmt(tot)}</b></div>${btns}</div></div>`;
+  fit();
+  document.querySelectorAll(".cat").forEach(b=>b.onclick=()=>openSheet(list[b.dataset.i]));
+}
 
-    <div id="detail-screen">
-        <div class="back-bar">
-            <button class="back-btn" onclick="goHome()">← Back</button>
-        </div>
-        <h2 id="detail-title" style="margin-left: 5px;">Section</h2>
-        <div id="detail-content" class="table-container"></div>
-    </div>
+function fit(){const st=$("stage"),rg=$("ring");if(!st||!rg)return;
+  const n=Math.floor(Math.min(st.clientWidth,st.clientHeight))-8;rg.style.width=rg.style.height=n+"px"}
+addEventListener("resize",fit);
+(function(){const c=document.createElement("canvas");c.width=c.height=180;const x=c.getContext("2d");
+  x.fillStyle="#26a69a";x.fillRect(0,0,180,180);x.strokeStyle="#fff";x.lineWidth=22;x.beginPath();x.arc(90,90,46,0,Math.PI*1.5);x.stroke();
+  x.strokeStyle="#ffffff88";x.beginPath();x.arc(90,90,46,Math.PI*1.5,Math.PI*2);x.stroke();
+  $("icon").href=c.toDataURL("image/png")})();
+function records(md,inc,exp){
+  let h=`<div class="sum"><div>Income<b style="color:var(--inc)">${fmt(inc)}</b></div><div>Expense<b style="color:var(--exp)">${fmt(exp)}</b></div></div>`;
+  if(!md.length)h+=`<p class="empty">No records this month.<br>Switch to the chart and tap a category to add one.</p>`;
+  const days=[...new Set(md.map(r=>r.date))].sort().reverse();
+  days.forEach(d=>{
+    h+=`<div class="day">${new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"})}</div>`;
+    md.filter(r=>r.date===d).sort((a,b)=>b.id-a.id).forEach(r=>{const c=catInfo(r.type,r.category);
+      h+=`<div class="rec"><div class="ic" style="background:${c[2]}">${c[1]}</div><div><b>${c[0]}</b><span>${r.note||""}</span></div>
+      <b style="color:var(--${r.type==="income"?"inc":"exp"})">${r.type==="income"?"+":"−"}${fmt(r.amount)}</b>
+      <button data-id="${r.id}" aria-label="Delete">✕</button></div>`})});
+  $("main").innerHTML=h;
+  document.querySelectorAll(".rec button").forEach(b=>b.onclick=()=>{
+    if(confirm("Delete this record?")){data=data.filter(r=>r.id!=b.dataset.id);save();render()}});
+}
 
-    <script>
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRkunnFJVyScmozzculTSPqKACNQKua3ujKWaSmR8DfSwqttC6doiiMb7XI7d0thOwXDe_f-BvDPT5H/pub?output=csv";
+function openSheet(c){
+  pick=c;amt="";$("amt").textContent="0";$("note").value="";
+  const t=new Date(),sameMonth=ym(t)===ym(cur);
+  $("date").value=sameMonth?t.toISOString().slice(0,10):ym(cur)+"-01";
+  $("sIc").textContent=c[1];$("sIc").style.background=c[2];$("sName").textContent=c[0]+" · "+(type==="expense"?"Expense":"Income");
+  $("sheet").classList.add("show");
+}
+$("keys").innerHTML=["1","2","3","4","5","6","7","8","9",".","0","⌫"].map(k=>`<button data-k="${k}">${k}</button>`).join("")+`<button class="ok" id="ok">Save</button>`;
+$("keys").onclick=e=>{const k=e.target.dataset.k;if(!k)return;
+  if(k==="⌫")amt=amt.slice(0,-1);
+  else if(k==="."){if(!amt.includes("."))amt=(amt||"0")+"."}
+  else if(!/\.\d\d$/.test(amt)&&amt.length<10)amt+=k;
+  $("amt").textContent=amt||"0"};
+$("ok").onclick=()=>{const v=parseFloat(amt);if(!v)return;
+  data.push({id:Date.now(),type,category:pick[0],amount:v,note:$("note").value.trim(),date:$("date").value});
+  save();$("sheet").classList.remove("show");render()};
+$("sheet").onclick=e=>{if(e.target.id==="sheet")$("sheet").classList.remove("show")};
 
-        let rawData = [];
-
-        async function fetchData() {
-            try {
-                const response = await fetch(CSV_URL + `&cb=${Date.now()}`);
-                const text = await response.text();
-                // Basic CSV Parser
-                rawData = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
-                renderDashboard();
-            } catch (e) {
-                alert("Error loading data. Check internet connection.");
-            }
-        }
-
-        function renderDashboard() {
-            // Based on your screenshot, KPIs are in specific cells
-            // Adjusting based on standard "Publish to Web" CSV structure
-            const kpiBox = document.getElementById('kpi-display');
-            
-            // Note: Since Google Sheets publishes the WHOLE sheet as CSV, 
-            // we have to target the row/column where the data lives.
-            // Based on your sheet screenshot:
-            const kpiRow = rawData[6]; // Row 7 in Excel is Index 6
-            
-            if(kpiRow) {
-                kpiBox.innerHTML = `
-                    <div class="kpi-card"><div class="kpi-label">Received Qty</div><div class="kpi-value">${kpiRow[1] || '0'}</div></div>
-                    <div class="kpi-card"><div class="kpi-label">Received ৳</div><div class="kpi-value">${kpiRow[3] || '0'}</div></div>
-                    <div class="kpi-card highlight"><div class="kpi-label">Stock Balance</div><div class="kpi-value">${kpiRow[10] || '0'}</div></div>
-                    <div class="kpi-card"><div class="kpi-label">Issued Qty</div><div class="kpi-value">${kpiRow[5] || '0'}</div></div>
-                `;
-            }
-        }
-
-        function showDetail(type) {
-            document.getElementById('main-menu').style.display = 'none';
-            document.getElementById('detail-screen').style.display = 'block';
-            const content = document.getElementById('detail-content');
-            const title = document.getElementById('detail-title');
-
-            if(type === 'breakdown') {
-                title.innerText = "Breakdown by Machine";
-                // Pulling data from rows 12 to 17 (approx based on screenshot)
-                let html = `<table><tr><th>Section</th><th>Qty</th><th>%</th></tr>`;
-                for(let i=11; i<=16; i++) {
-                    if(rawData[i]) {
-                        html += `<tr><td>${rawData[i][1]}</td><td>${rawData[i][2]}</td><td>${rawData[i][3]}</td></tr>`;
-                    }
-                }
-                html += `</table>`;
-                content.innerHTML = html;
-            } else {
-                title.innerText = "Recent Activity";
-                let html = `<table><tr><th>Date</th><th>Part</th><th>M/C</th><th>Qty</th></tr>`;
-                // Pulling activity from rows 12 to 17, right side columns
-                for(let i=11; i<=16; i++) {
-                    if(rawData[i]) {
-                        html += `<tr><td>${rawData[i][6]}</td><td>${rawData[i][7]}</td><td>${rawData[i][8]}</td><td>${rawData[i][9]}</td></tr>`;
-                    }
-                }
-                html += `</table>`;
-                content.innerHTML = html;
-            }
-        }
-
-        function goHome() {
-            document.getElementById('main-menu').style.display = 'block';
-            document.getElementById('detail-screen').style.display = 'none';
-        }
-
-        fetchData();
-    </script>
+$("tE").onclick=()=>{type="expense";render()};
+$("tI").onclick=()=>{type="income";render()};
+$("viewBtn").onclick=()=>{view=view==="home"?"records":"home";render()};
+$("prev").onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);render()};
+$("next").onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);render()};
+$("clearBtn").onclick=()=>{
+  const rows=[["Date","Type","Category","Amount","Note"],...monthData().map(r=>[r.date,r.type,r.category,r.amount,'"'+(r.note||"").replace(/"/g,'""')+'"'])];
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([rows.join("\n")],{type:"text/csv"}));
+  a.download="money-"+ym(cur)+".csv";a.click()};
+cur=new Date(cur.getFullYear(),cur.getMonth(),1);
+render();
+</script>
 </body>
 </html>
